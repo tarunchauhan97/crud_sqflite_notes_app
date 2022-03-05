@@ -1,3 +1,4 @@
+import 'package:crud_sqflite_notes_app/screens/add_note_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -35,7 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.blueAccent,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNoteScreen()));
+        },
         child: Icon(Icons.add),
       ),
       body: ListView.builder(
