@@ -33,12 +33,16 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     }
   }
 
+  _submit(){
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blueAccent,
       body: GestureDetector(
-        onTap: () {},
+        onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 80.0),
@@ -51,7 +55,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   child: Icon(Icons.arrow_back, size: 30.0, color: Theme.of(context).primaryColor),
                 ),
                 SizedBox(height: 20.0),
-                Text('Add Note', style: TextStyle(color: Colors.deepPurple, fontSize: 40.0)),
+                Text(titleText, style: TextStyle(color: Colors.deepPurple, fontSize: 40.0)),
                 SizedBox(height: 10.0),
                 Form(
                   key: _formKey,
@@ -67,6 +71,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                               )),
+                          validator: (input) => input!.trim().isEmpty ? "Please Enter" : null,
+                          onSaved: (input) => _title = input!,
+                          initialValue: _title,
                         ),
                       ),
                       Padding(
@@ -86,6 +93,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 20.0),
                         child: DropdownButtonFormField(
+                          isDense: true,
+                          icon: Icon(Icons.arrow_drop_down_circle),
+                          iconSize: 22,
+                          iconEnabledColor: Theme.of(context).primaryColor,
                           items: _priorities.map((String priority) {
                             return DropdownMenuItem(
                                 value: _priority, //
@@ -100,6 +111,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                               )),
+                          validator: (input) => _priority == null ? 'Please Select' : null,
                           onChanged: (value) {
                             setState(() {
                               _priority = value.toString();
@@ -118,7 +130,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: _submit,
                           child: Text(
                             btnText,
                             style: TextStyle(color: Colors.white, fontSize: 20.0),
