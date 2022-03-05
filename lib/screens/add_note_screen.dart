@@ -1,9 +1,14 @@
+import 'package:crud_sqflite_notes_app/database/database.dart';
 import 'package:crud_sqflite_notes_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../models/note_model.dart';
+
 class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({Key? key}) : super(key: key);
+  const AddNoteScreen({Key? key, this.note, this.updateNoteList}) : super(key: key);
+  final Note? note;
+  final Function? updateNoteList;
 
   @override
   State<AddNoteScreen> createState() => _AddNoteScreenState();
@@ -22,6 +27,32 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   final DateFormat _dataFormatter = DateFormat('MMM dd,yyyy');
   final List<String> _priorities = ['Low', 'Medium', 'High'];
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.note != null) {
+      _title = widget.note!.title!;
+      _date = widget.note!.date!;
+      _priority = widget.note!.priority!;
+      setState(() {
+        btnText = 'Update Note';
+        titleText = 'Update Note';
+      });
+    } else {
+      setState(() {
+        btnText = 'Add Note';
+        titleText = 'Add Note';
+      });
+    }
+    _dateController.text = _dataFormatter.format(_date);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _dateController.dispose();
+  }
+
   _handleDatePicker() async {
     final DateTime? date = await showDatePicker(
         context: context, initialDate: _date, firstDate: DateTime(2000), lastDate: DateTime(2100));
@@ -33,8 +64,26 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     }
   }
 
-  _submit(){
+  _submit() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      print('$_title,$_date,$_priority');
+      print('$_title,$_date,$_priority');
+      print('$_title,$_date,$_priority');
 
+      Note note = Note(title: _title, date: _date, priority: _priority);
+      if (widget.note == null) {
+        note.status = 0;
+        DatabaseHelper.instance.insertNote(note);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+      } else {
+        note.id = widget.note!.id;
+        note.status = widget.note!.status;
+        DatabaseHelper.instance.updateNote(note);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+      }
+      widget.updateNoteList!();
+    }
   }
 
   @override
@@ -99,7 +148,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                           iconEnabledColor: Theme.of(context).primaryColor,
                           items: _priorities.map((String priority) {
                             return DropdownMenuItem(
-                                value: _priority, //
+                                value: priority, //
+                                //value: _priority
                                 child: Text(
                                   priority,
                                   style: TextStyle(color: Colors.black, fontSize: 18.0),
@@ -117,7 +167,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                               _priority = value.toString();
                             });
                           },
-                          //value: _priority,
+                          value: _priority,
                         ),
                       ),
                       Container(

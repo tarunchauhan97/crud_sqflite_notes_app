@@ -62,8 +62,8 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               MaterialPageRoute(
                 builder: (_) => AddNoteScreen(
-                    // updateNoteList: _updateNoteList(),
-                    // note:note,
+                    updateNoteList: _updateNoteList(),
+                    note:note,
                     ),
               ),
             ),
@@ -81,7 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNoteScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNoteScreen(
+            updateNoteList: _updateNoteList(),
+          )));
         },
         child: Icon(Icons.add),
       ),
