@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:crud_sqflite_notes_app/models/note_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -34,5 +35,42 @@ class DatabaseHelper {
   void _createDb(Database db, int version) async {
     await db.execute(
         'CREATE TABLE $noteTable($colId INTEGER PRIMARY KEY AUTOINCREMENT,$colTitle TEXT,$colDate TEXT,$colPriority TEXT,$colStatus INTEGER)');
+  }
+
+  Future<List<Map<String, dynamic>>> getNoteFromList() async {
+    Database? db = await this.db;
+    final List<Map<String, dynamic>> result = await db!.query(noteTable);
+    return result;
+  }
+
+  Future<List<Note>> getNoteList() async {
+    final List<Map<String, dynamic>> noteMapList = await getNoteFromList();
+    final List<Note> noteList = [];
+
+    noteMapList.forEach((noteMap) {
+      noteList.add(Note.fromMap(noteMap));
+    });
+    noteList.sort((noteA, noteB) => noteA.date!.compareTo(noteB.date!));
+    return noteList;
+  }
+
+  Future<int> insertNote(Note note) async {
+    Database? db = await this.db;
+    final int result =
+        await db!.update(noteTable, note.toMap(), where: '$colId = ?', whereArgs: [note.id]);
+    return result;
+  }
+
+  Future<int> updateNote(Note note) async {
+    Database? db = await this.db;
+    final int result =
+        await db!.update(noteTable, note.toMap(), where: '$colId = ?', whereArgs: [note.id]);
+    return result;
+  }
+
+  Future<int> deleteNote(int id) async {
+    Database? db = await this.db;
+    final int result = await db!.delete(noteTable, where: '$colId = ?', whereArgs: [id]);
+    return result;
   }
 }
